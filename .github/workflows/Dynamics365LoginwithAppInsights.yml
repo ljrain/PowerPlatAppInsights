@@ -1,0 +1,32 @@
+name: Dynamics 365 Login with App Insights
+
+on: [push]
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+
+    - name: Install Microsoft.CrmSdk.XrmTooling.CrmConnector
+      run: dotnet tool install --global Microsoft.CrmSdk.XrmTooling.CrmConnector
+
+    - name: Login to Dynamics 365
+      run: |
+        dotnet tool run Microsoft.CrmSdk.XrmTooling.CrmConnector --username ${{ secrets.DYNAMICS_USERNAME }} --password ${{ secrets.DYNAMICS_PASSWORD }}
+
+    - name: Track Availability in App Insights
+      run: |
+        echo "Tracking availability..."
+        dotnet new console -o TrackAvailabilityApp
+        cd TrackAvailabilityApp
+        dotnet add package Microsoft.ApplicationInsights
+        echo 'using System; using Microsoft.ApplicationInsights; using Microsoft.ApplicationInsights.Extensibility; using Microsoft.ApplicationInsights.DataContracts; class Program { static void Main() { var telemetryClient = new TelemetryClient(new TelemetryConfiguration("${{ secrets.APPINSIGHTS_INSTRUMENTATIONKEY }}")); var availability = new AvailabilityTelemetry("LoginTest", DateTime.UtcNow, TimeSpan.FromSeconds(30), "Location", true); telemetryClient.TrackAvailability(availability); telemetryClient.Flush(); } }' > Program.cs
+        dotnet run
