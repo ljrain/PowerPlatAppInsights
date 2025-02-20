@@ -5,7 +5,7 @@ on:
     inputs:
       # Change this value
       solution_name:
-        description: 'name of the solution to worked on from Power Platform'
+        description: 'Currently not in use'
         required: true
         default: Test
 
