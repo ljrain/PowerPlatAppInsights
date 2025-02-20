@@ -30,12 +30,12 @@ permissions:
    #     sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.10_amd64.deb
    #     sudo dpkg -i libssl1.0-dev_1.0.2n-1ubuntu5.10_amd64.deb
 
-    - name: Install Microsoft.CrmSdk.XrmTooling.CrmConnector
-      run: dotnet tool install --global Microsoft.CrmSdk.XrmTooling.CrmConnector
+   # - name: Install Microsoft.CrmSdk.XrmTooling.CrmConnector
+   #   run: dotnet tool install --global Microsoft.CrmSdk.XrmTooling.CrmConnector
 
-    - name: Login to Dynamics 365
-      run: |
-        dotnet tool run Microsoft.CrmSdk.XrmTooling.CrmConnector --username ${{ secrets.DYNAMICS_USERNAME }} --password ${{ secrets.DYNAMICS_PASSWORD }}
+   # - name: Login to Dynamics 365
+   #   run: |
+   #     dotnet tool run Microsoft.CrmSdk.XrmTooling.CrmConnector --username ${{ secrets.DYNAMICS_USERNAME }} --password ${{ secrets.DYNAMICS_PASSWORD }}
 
     - name: Track Availability in App Insights
       run: |
