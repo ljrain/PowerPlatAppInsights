@@ -1,6 +1,16 @@
 name: Dynamics 365 Login with App Insights
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      # Change this value
+      solution_name:
+        description: 'name of the solution to worked on from Power Platform'
+        required: true
+        default: Test
+
+permissions:
+  contents: write
 
 jobs:
   login:
