@@ -1,0 +1,74 @@
+name: Custom Availability Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  availability-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Install Application Insights SDK
+      run: dotnet add package Microsoft.ApplicationInsights
+
+    - name: Run Availability Test
+      run: |
+        echo "using Microsoft.ApplicationInsights;" > AvailabilityTest.cs
+        echo "using Microsoft.ApplicationInsights.Extensibility;" >> AvailabilityTest.cs
+        echo "using Microsoft.ApplicationInsights.DataContracts;" >> AvailabilityTest.cs
+        echo "using System;" >> AvailabilityTest.cs
+        echo "using System.Net.Http;" >> AvailabilityTest.cs
+        echo "using System.Threading.Tasks;" >> AvailabilityTest.cs
+        echo "namespace AvailabilityTest" >> AvailabilityTest.cs
+        echo "{" >> AvailabilityTest.cs
+        echo "    class Program" >> AvailabilityTest.cs
+        echo "    {" >> AvailabilityTest.cs
+        echo "        static async Task Main(string[] args)" >> AvailabilityTest.cs
+        echo "        {" >> AvailabilityTest.cs
+        echo "            var telemetryConfig = TelemetryConfiguration.CreateDefault();" >> AvailabilityTest.cs
+        echo "            telemetryConfig.ConnectionString = Environment.GetEnvironmentVariable(\"APPINSIGHTS_CONNECTION_STRING\");" >> AvailabilityTest.cs
+        echo "            var telemetryClient = new TelemetryClient(telemetryConfig);" >> AvailabilityTest.cs
+        echo "            var availabilityTelemetry = new AvailabilityTelemetry" >> AvailabilityTest.cs
+        echo "            {" >> AvailabilityTest.cs
+        echo "                Name = \"Custom Availability Test\"," >> AvailabilityTest.cs
+        echo "                RunLocation = \"GitHub Actions\"," >> AvailabilityTest.cs
+        echo "                Success = false," >> AvailabilityTest.cs
+        echo "                Timestamp = DateTimeOffset.UtcNow," >> AvailabilityTest.cs
+        echo "                Duration = TimeSpan.Zero" >> AvailabilityTest.cs
+        echo "            };" >> AvailabilityTest.cs
+        echo "            using (HttpClient client = new HttpClient())" >> AvailabilityTest.cs
+        echo "            {" >> AvailabilityTest.cs
+        echo "                var stopwatch = System.Diagnostics.Stopwatch.StartNew();" >> AvailabilityTest.cs
+        echo "                try" >> AvailabilityTest.cs
+        echo "                {" >> AvailabilityTest.cs
+        echo "                    HttpResponseMessage response = await client.GetAsync(\"https://your-service-url.com\");" >> AvailabilityTest.cs
+        echo "                    stopwatch.Stop();" >> AvailabilityTest.cs
+        echo "                    availabilityTelemetry.Duration = stopwatch.Elapsed;" >> AvailabilityTest.cs
+        echo "                    availabilityTelemetry.Success = response.IsSuccessStatusCode;" >> AvailabilityTest.cs
+        echo "                    availabilityTelemetry.Message = response.IsSuccessStatusCode ? \"Service is available.\" : \"Service is unavailable.\";" >> AvailabilityTest.cs
+        echo "                }" >> AvailabilityTest.cs
+        echo "                catch (Exception ex)" >> AvailabilityTest.cs
+        echo "                {" >> AvailabilityTest.cs
+        echo "                    stopwatch.Stop();" >> AvailabilityTest.cs
+        echo "                    availabilityTelemetry.Duration = stopwatch.Elapsed;" >> AvailabilityTest.cs
+        echo "                    availabilityTelemetry.Message = ex.Message;" >> AvailabilityTest.cs
+        echo "                }" >> AvailabilityTest.cs
+        echo "            }" >> AvailabilityTest.cs
+        echo "            telemetryClient.TrackAvailability(availabilityTelemetry);" >> AvailabilityTest.cs
+        echo "            telemetryClient.Flush();" >> AvailabilityTest.cs
+        echo "            // Allow time for flushing" >> AvailabilityTest.cs
+        echo "            System.Threading.Thread.Sleep(5000);" >> AvailabilityTest.cs
+        echo "        }" >> AvailabilityTest.cs
+        echo "    }" >> AvailabilityTest.cs
+        echo "}" >> AvailabilityTest.cs
+        dotnet run
+      env:
+        APPINSIGHTS_CONNECTION_STRING: ${{ secrets.APPINSIGHTS_CONNECTION_STRING }}
