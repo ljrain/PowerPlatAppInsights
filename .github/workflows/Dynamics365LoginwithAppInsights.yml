@@ -25,6 +25,6 @@ jobs:
         dotnet run --project YourProjectName
       env:
         DATAVERSE_URL: ${{ secrets.DATAVERSE_URL }}
-        CLIENT_ID: ${{ secretsDATAVERSE_CLIENTID }}
+        CLIENT_ID: ${{ secrets.DATAVERSE_CLIENTID }}
         CLIENT_SECRET: ${{ secrets.DATAVERSE_SECRET }}
         TENANT_ID: ${{ secrets.TENANT_ID }}
