@@ -20,3 +20,4 @@ jobs:
         app-id: "70dbbbb5-71bd-45d5-a23b-f23149d30c73"
         client-secret:  ${{ secrets.CLIENT_SECRET }}
         tenant-id: "c0daba30-fba7-4669-a2fc-36142728b7e9"
+        cloud: "USGOV"
