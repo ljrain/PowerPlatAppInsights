@@ -20,7 +20,7 @@ namespace TrackAvailability
             string message = args[2];
             string system = args[3];
 
-            var telemetryClient = new TelemetryClient(new TelemetryConfiguration("YOUR_INSTRUMENTATION_KEY"));
+            var telemetryClient = new TelemetryClient(new TelemetryConfiguration("bf10b4d5-7c38-4d6c-8655-79a409a55663"));
 
             var availabilityTelemetry = new AvailabilityTelemetry
             {
