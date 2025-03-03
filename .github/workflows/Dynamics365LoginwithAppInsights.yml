@@ -1,47 +1,30 @@
-name: Dynamics 365 Login with App Insights
+name: Login to Dynamics 365
 
 on:
+  push:
   workflow_dispatch:
-    inputs:
-      # Change this value
-      solution_name:
-        description: 'Currently not in use'
-        required: true
-        default: Test
 
-permissions:
-  contents: write
+jobs:
+  login:
+    runs-on: ubuntu-latest
 
-  steps:
+    steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
     - name: Set up .NET Core
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.x'  # Update to a supported .NET version
+        dotnet-version: '6.0.x'
 
-    - name: Install OpenSSL 1.0
+    - name: Install Dataverse SDK
+      run: dotnet add package Microsoft.PowerPlatform.Dataverse.Client
+
+    - name: Login to Dynamics 365
       run: |
-        sudo apt-get update
-        sudo apt-get install -y wget
-        wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.10_amd64.deb
-        wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0-dev_1.0.2n-1ubuntu5.10_amd64.deb
-        sudo dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.10_amd64.deb
-        sudo dpkg -i libssl1.0-dev_1.0.2n-1ubuntu5.10_amd64.deb
-
-   # - name: Install Microsoft.CrmSdk.XrmTooling.CrmConnector
-   #   run: dotnet tool install --global Microsoft.CrmSdk.XrmTooling.CrmConnector
-
-   # - name: Login to Dynamics 365
-   #   run: |
-   #     dotnet tool run Microsoft.CrmSdk.XrmTooling.CrmConnector --username ${{ secrets.DYNAMICS_USERNAME }} --password ${{ secrets.DYNAMICS_PASSWORD }}
-
-    - name: Track Availability in App Insights
-      run: |
-        echo "Tracking availability..."
-        dotnet new console -o TrackAvailabilityApp
-        cd TrackAvailabilityApp
-        dotnet add package Microsoft.ApplicationInsights
-        echo 'using System; using Microsoft.ApplicationInsights; using Microsoft.ApplicationInsights.Extensibility; using Microsoft.ApplicationInsights.DataContracts; class Program { static void Main() { var telemetryClient = new TelemetryClient(new TelemetryConfiguration("${{ secrets.APPINSIGHTS_INSTRUMENTATIONKEY }}")); var availability = new AvailabilityTelemetry("LoginTest", DateTime.UtcNow, TimeSpan.FromSeconds(30), "Location", true); telemetryClient.TrackAvailability(availability); telemetryClient.Flush(); } }' > Program.cs
-        dotnet run
+        dotnet run --project YourProjectName
+      env:
+        DATAVERSE_URL: ${{ secrets.DATAVERSE_URL }}
+        CLIENT_ID: ${{ secretsDATAVERSE_CLIENTID }}
+        CLIENT_SECRET: ${{ secrets.DATAVERSE_SECRET }}
+        TENANT_ID: ${{ secrets.TENANT_ID }}
