@@ -1,7 +1,6 @@
 name: Login to Dynamics 365
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:
