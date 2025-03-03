@@ -1,0 +1,43 @@
+name: Track Availability
+
+on:
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Duration of the availability test in milliseconds'
+        required: true
+        default: '1000'
+      status:
+        description: 'Status of the availability test (e.g., Success, Failure)'
+        required: true
+        default: 'Success'
+      message:
+        description: 'Message or text associated with the availability test'
+        required: true
+        default: 'Test completed successfully'
+      system:
+        description: 'Target system for the availability test'
+        required: true
+        default: 'System A'
+
+jobs:
+  track-availability:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build the project
+      run: dotnet build --configuration Release
+
+    - name: Run TrackAvailability script
+      run: dotnet run --project TrackAvailability.csproj -- ${{ github.event.inputs.duration }} ${{ github.event.inputs.status }} ${{ github.event.inputs.message }} ${{ github.event.inputs.system }}
