@@ -3,8 +3,6 @@ name: Custom Availability Test
 on:
   workflow_dispatch:
 
-permissions: read, write
-
 jobs:
   availability-test:
     runs-on: ubuntu-latest
