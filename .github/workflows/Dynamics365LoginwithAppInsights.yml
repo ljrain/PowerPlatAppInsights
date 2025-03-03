@@ -12,10 +12,6 @@ jobs:
       CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       TENANT_ID: ${{ secrets.TENANT_ID }}
 
-    steps:
-    - name: Install Power Platform Tools
-      uses: microsoft/powerplatform-actions/actions-install@v1
-
     - name: who-am-i action
       uses: microsoft/powerplatform-actions/who-am-i@v0
       with:
